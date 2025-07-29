@@ -88,18 +88,11 @@ export function SignInForm() {
             className="text-primary hover:text-primary-hover hover:underline font-medium cursor-pointer"
             onClick={() => setFlow(flow === "signIn" ? "signUp" : "signIn")}
           >
-            {flow === "signIn" ? "Hier registrieren" : "Hier anmelden"}
+            {flow === "signIn" ? "Hier sign up" : "Hier sign in"}
           </button>
         </div>
       </form>
-      <div className="flex items-center justify-center my-3">
-        <hr className="my-4 grow border-gray-200" />
-        <span className="mx-4 text-secondary">oder</span>
-        <hr className="my-4 grow border-gray-200" />
-      </div>
-      <button className="auth-button" onClick={() => void signIn("anonymous")}>
-        Anonym anmelden
-      </button>
+
     </div>
   );
 }

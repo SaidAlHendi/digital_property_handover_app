@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { toast } from "sonner";
+import  PasswordReset  from "./PasswordReset";
 
 export function Profile() {
   const user = useQuery(api.users.getCurrentUser);
@@ -106,7 +107,7 @@ export function Profile() {
         <div className="mt-8 pt-6 border-t border-gray-200">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Passwort ändern</h3>
           <p className="text-sm text-gray-600 mb-4">
-            Um Ihr Passwort zu ändern, melden Sie sich ab und verwenden Sie die "Passwort vergessen" Funktion beim Anmelden.
+          <PasswordReset/>
           </p>
         </div>
       </div>
