@@ -163,30 +163,30 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
         <button
           onClick={onBack}
-          className="text-blue-600 hover:text-blue-800 flex items-center gap-2"
+          className="text-blue-600 hover:text-blue-800 flex items-center gap-2 text-sm sm:text-base"
         >
           ← Zurück
         </button>
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-xl sm:text-3xl font-bold text-gray-900">
           {objectId ? "Objekt bearbeiten" : "Neues Objekt erstellen"}
         </h1>
         {isReleased && (
-          <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+          <span className="px-2 sm:px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs sm:text-sm">
             Freigegeben
           </span>
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
         {/* Object Details */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Objektdaten</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Objektdaten</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div className="sm:col-span-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                 Objektbezeichnung *
               </label>
               <input
@@ -194,24 +194,24 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
                 required
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 disabled={isReleased}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                 Adresszusatz
               </label>
               <input
                 type="text"
                 value={formData.addressSupplement}
                 onChange={(e) => setFormData(prev => ({ ...prev, addressSupplement: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 disabled={isReleased}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                 Straße *
               </label>
               <input
@@ -219,12 +219,12 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
                 required
                 value={formData.street}
                 onChange={(e) => setFormData(prev => ({ ...prev, street: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 disabled={isReleased}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                 PLZ *
               </label>
               <input
@@ -232,12 +232,12 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
                 required
                 value={formData.postalCode}
                 onChange={(e) => setFormData(prev => ({ ...prev, postalCode: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 disabled={isReleased}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                 Ort *
               </label>
               <input
@@ -245,7 +245,7 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
                 required
                 value={formData.city}
                 onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 disabled={isReleased}
               />
             </div>
@@ -253,20 +253,20 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
         </div>
 
         {/* Involved Parties */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Beteiligte Personen</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Beteiligte Personen</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Party 1 */}
             <div>
-              <h3 className="text-lg font-medium mb-3">Partei 1</h3>
-              <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-medium mb-2 sm:mb-3">Partei 1</h3>
+              <div className="space-y-2 sm:space-y-3">
                 <input
                   type="text"
                   placeholder="Name *"
                   required
                   value={formData.party1Name}
                   onChange={(e) => setFormData(prev => ({ ...prev, party1Name: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   disabled={isReleased}
                 />
                 <input
@@ -275,7 +275,7 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
                   required
                   value={formData.party1Function}
                   onChange={(e) => setFormData(prev => ({ ...prev, party1Function: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   disabled={isReleased}
                 />
                 <textarea
@@ -283,7 +283,7 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
                   required
                   value={formData.party1Address}
                   onChange={(e) => setFormData(prev => ({ ...prev, party1Address: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   rows={3}
                   disabled={isReleased}
                 />
@@ -293,7 +293,7 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
                   required
                   value={formData.party1Phone}
                   onChange={(e) => setFormData(prev => ({ ...prev, party1Phone: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   disabled={isReleased}
                 />
                 <input
@@ -302,7 +302,7 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
                   required
                   value={formData.party1Email}
                   onChange={(e) => setFormData(prev => ({ ...prev, party1Email: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   disabled={isReleased}
                 />
               </div>
@@ -310,15 +310,15 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
 
             {/* Party 2 */}
             <div>
-              <h3 className="text-lg font-medium mb-3">Partei 2</h3>
-              <div className="space-y-3">
+              <h3 className="text-base sm:text-lg font-medium mb-2 sm:mb-3">Partei 2</h3>
+              <div className="space-y-2 sm:space-y-3">
                 <input
                   type="text"
                   placeholder="Name *"
                   required
                   value={formData.party2Name}
                   onChange={(e) => setFormData(prev => ({ ...prev, party2Name: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   disabled={isReleased}
                 />
                 <input
@@ -327,7 +327,7 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
                   required
                   value={formData.party2Function}
                   onChange={(e) => setFormData(prev => ({ ...prev, party2Function: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   disabled={isReleased}
                 />
                 <textarea
@@ -335,7 +335,7 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
                   required
                   value={formData.party2Address}
                   onChange={(e) => setFormData(prev => ({ ...prev, party2Address: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   rows={3}
                   disabled={isReleased}
                 />
@@ -345,7 +345,7 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
                   required
                   value={formData.party2Phone}
                   onChange={(e) => setFormData(prev => ({ ...prev, party2Phone: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   disabled={isReleased}
                 />
                 <input
@@ -354,7 +354,7 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
                   required
                   value={formData.party2Email}
                   onChange={(e) => setFormData(prev => ({ ...prev, party2Email: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   disabled={isReleased}
                 />
               </div>
@@ -363,28 +363,28 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
         </div>
 
         {/* Keys */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Schlüsselübergabe</h2>
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <div className="flex justify-between items-center mb-3 sm:mb-4">
+            <h2 className="text-lg sm:text-xl font-semibold">Schlüsselübergabe</h2>
             {!isReleased && (
               <button
                 type="button"
                 onClick={addKey}
-                className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+                className="bg-blue-600 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm hover:bg-blue-700"
               >
                 Schlüssel hinzufügen
               </button>
             )}
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {formData.keys.map((key, index) => (
-              <div key={index} className="flex gap-3 items-center">
+              <div key={index} className="flex flex-col sm:flex-row gap-2 sm:gap-3 items-start sm:items-center">
                 <input
                   type="text"
                   placeholder="Schlüsseltyp (z.B. Haustürschlüssel)"
                   value={key.type}
                   onChange={(e) => updateKey(index, "type", e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   disabled={isReleased}
                 />
                 <input
@@ -393,14 +393,14 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
                   min="1"
                   value={key.quantity}
                   onChange={(e) => updateKey(index, "quantity", parseInt(e.target.value) || 1)}
-                  className="w-20 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full sm:w-20 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   disabled={isReleased}
                 />
                 {!isReleased && formData.keys.length > 1 && (
                   <button
                     type="button"
                     onClick={() => removeKey(index)}
-                    className="text-red-600 hover:text-red-800 px-2"
+                    className="text-red-600 hover:text-red-800 px-2 text-sm sm:text-base"
                   >
                     ✕
                   </button>
@@ -421,28 +421,28 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
         </div>
 
         {/* Counters */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Zählerdaten</h2>
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <div className="flex justify-between items-center mb-3 sm:mb-4">
+            <h2 className="text-lg sm:text-xl font-semibold">Zählerdaten</h2>
             {!isReleased && (
               <button
                 type="button"
                 onClick={addCounter}
-                className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+                className="bg-blue-600 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm hover:bg-blue-700"
               >
                 Zähler hinzufügen
               </button>
             )}
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {formData.counters.map((counter, index) => (
-              <div key={index} className="flex gap-3 items-center">
+              <div key={index} className="flex flex-col sm:flex-row gap-2 sm:gap-3 items-start sm:items-center">
                 <input
                   type="text"
                   placeholder="Zählernummer"
                   value={counter.number}
                   onChange={(e) => updateCounter(index, "number", e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   disabled={isReleased}
                 />
                 <input
@@ -452,14 +452,14 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
                   step="0.01"
                   value={counter.currentReading}
                   onChange={(e) => updateCounter(index, "currentReading", parseFloat(e.target.value) || 0)}
-                  className="w-32 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full sm:w-32 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   disabled={isReleased}
                 />
                 {!isReleased && formData.counters.length > 1 && (
                   <button
                     type="button"
                     onClick={() => removeCounter(index)}
-                    className="text-red-600 hover:text-red-800 px-2"
+                    className="text-red-600 hover:text-red-800 px-2 text-sm sm:text-base"
                   >
                     ✕
                   </button>
@@ -480,29 +480,29 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
         </div>
 
         {/* Miscellaneous and Notes */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Sonstiges & Anmerkungen</h2>
-          <div className="space-y-4">
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Sonstiges & Anmerkungen</h2>
+          <div className="space-y-3 sm:space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                 Sonstiges
               </label>
               <textarea
                 value={formData.miscellaneous}
                 onChange={(e) => setFormData(prev => ({ ...prev, miscellaneous: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 rows={3}
                 disabled={isReleased}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                 Anmerkungen
               </label>
               <textarea
                 value={formData.notes}
                 onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 rows={3}
                 disabled={isReleased}
               />
@@ -521,51 +521,51 @@ export function ObjectForm({ objectId, onBack }: ObjectFormProps) {
         </div>
 
         {/* Signature */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Unterschrift</h2>
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Unterschrift</h2>
           <textarea
             placeholder="Unterschrift oder Bestätigung"
             value={formData.signature}
             onChange={(e) => setFormData(prev => ({ ...prev, signature: e.target.value }))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
             rows={2}
             disabled={isReleased}
           />
         </div>
 
-        {/* Rooms */}
-        {objectId ? (
-          <RoomForm objectId={objectId} isReleased={isReleased} />
-        ) : (
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold mb-4">Räume</h2>
-            <div className="text-center py-8 text-gray-500">
-              <p className="mb-4">Räume können nach dem Erstellen des Objekts hinzugefügt werden.</p>
-              <p className="text-sm">Speichern Sie zuerst die Objektdaten, um Räume hinzufügen zu können.</p>
-            </div>
-          </div>
-        )}
-
         {/* Submit Button */}
         {!isReleased && (
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <button
               type="submit"
               disabled={isLoading}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 text-sm sm:text-base"
             >
               {isLoading ? "Speichere..." : (objectId ? "Aktualisieren" : "Erstellen")}
             </button>
             <button
               type="button"
               onClick={onBack}
-              className="bg-gray-300 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-400 transition-colors"
+              className="bg-gray-300 text-gray-700 px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-gray-400 transition-colors text-sm sm:text-base"
             >
               Abbrechen
             </button>
           </div>
         )}
       </form>
+
+      {/* Rooms - Outside the main form to prevent interference */}
+      {objectId ? (
+        <RoomForm objectId={objectId} isReleased={isReleased} />
+      ) : (
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Räume</h2>
+          <div className="text-center py-6 sm:py-8 text-gray-500">
+            <p className="mb-3 sm:mb-4 text-sm sm:text-base">Räume können nach dem Erstellen des Objekts hinzugefügt werden.</p>
+            <p className="text-xs sm:text-sm">Speichern Sie zuerst die Objektdaten, um Räume hinzufügen zu können.</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

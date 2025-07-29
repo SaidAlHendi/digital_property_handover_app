@@ -43,7 +43,7 @@ export const createRoom = mutation({
     if (object.isReleased && !isAdmin) {
       throw new Error("Cannot edit released object");
     }
-    
+    console.log(args)
     const roomId = await ctx.db.insert("rooms", {
       ...args,
       createdAt: Date.now(),

@@ -8,6 +8,7 @@ interface ImageGalleryProps {
 }
 
 export function ImageGallery({ title, images }: ImageGalleryProps) {
+  console.log(title)
   if (!images || images.length === 0) {
     return null;
   }

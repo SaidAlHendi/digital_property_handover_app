@@ -10,6 +10,15 @@ export function SignInForm() {
 
   return (
     <div className="w-full">
+      <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mb-4">
+        <div className="text-sm text-blue-800">
+          <p className="font-medium mb-2">Anmeldeanweisungen:</p>
+          <div className="space-y-1">
+            <p><strong>Bestehende Benutzer:</strong> Verwenden Sie "Sign in" mit Ihrem bestehenden Passwort</p>
+            <p><strong>Neue Benutzer (vom Admin erstellt):</strong> Verwenden Sie "Sign up" um Ihr Konto zu aktivieren und ein Passwort zu erstellen</p>
+          </div>
+        </div>
+      </div>
       <form
         className="flex flex-col gap-form-field"
         onSubmit={(e) => {
@@ -20,12 +29,15 @@ export function SignInForm() {
           void signIn("password", formData).catch((error) => {
             let toastTitle = "";
             if (error.message.includes("Invalid password")) {
-              toastTitle = "Invalid password. Please try again.";
+              toastTitle = "Falsches Passwort. Bitte versuchen Sie es erneut.";
+            } else if (error.message.includes("User not found")) {
+              toastTitle = flow === "signIn" 
+                ? "Benutzer nicht gefunden. Wurden Sie von einem Admin erstellt? Dann verwenden Sie 'Sign up'."
+                : "Diese E-Mail ist bereits registriert. Verwenden Sie 'Sign in'.";
             } else {
-              toastTitle =
-                flow === "signIn"
-                  ? "Could not sign in, did you mean to sign up?"
-                  : "Could not sign up, did you mean to sign in?";
+              toastTitle = flow === "signIn"
+                ? "Anmeldung fehlgeschlagen. Wurden Sie von einem Admin erstellt? Dann verwenden Sie 'Sign up'."
+                : "Registrierung fehlgeschlagen. Existiert bereits ein Konto? Dann verwenden Sie 'Sign in'.";
             }
             toast.error(toastTitle);
             setSubmitting(false);
@@ -43,34 +55,34 @@ export function SignInForm() {
           className="auth-input-field"
           type="password"
           name="password"
-          placeholder="Password"
+          placeholder={flow === "signIn" ? "Passwort" : "Neues Passwort erstellen"}
           required
         />
         <button className="auth-button" type="submit" disabled={submitting}>
-          {flow === "signIn" ? "Sign in" : "Sign up"}
+          {submitting ? "Wird verarbeitet..." : (flow === "signIn" ? "Anmelden" : "Registrieren")}
         </button>
         <div className="text-center text-sm text-secondary">
           <span>
             {flow === "signIn"
-              ? "Don't have an account? "
-              : "Already have an account? "}
+              ? "Noch kein Konto oder vom Admin erstellt? "
+              : "Bereits ein Konto? "}
           </span>
           <button
             type="button"
             className="text-primary hover:text-primary-hover hover:underline font-medium cursor-pointer"
             onClick={() => setFlow(flow === "signIn" ? "signUp" : "signIn")}
           >
-            {flow === "signIn" ? "Sign up instead" : "Sign in instead"}
+            {flow === "signIn" ? "Hier registrieren" : "Hier anmelden"}
           </button>
         </div>
       </form>
       <div className="flex items-center justify-center my-3">
         <hr className="my-4 grow border-gray-200" />
-        <span className="mx-4 text-secondary">or</span>
+        <span className="mx-4 text-secondary">oder</span>
         <hr className="my-4 grow border-gray-200" />
       </div>
       <button className="auth-button" onClick={() => void signIn("anonymous")}>
-        Sign in anonymously
+        Anonym anmelden
       </button>
     </div>
   );

@@ -19,10 +19,10 @@ export function UserManagement() {
       const email = formData.get("email") as string;
       const name = formData.get("name") as string;
       const role = formData.get("role") as "admin" | "user" | "manager";
-      const temporaryPassword = formData.get("temporaryPassword") as string;
 
-      await createUser({ email, name, role, temporaryPassword });
-      toast.success("Benutzer wurde erfolgreich erstellt");
+      // Entfernen Sie temporaryPassword - nicht mehr benötigt
+      const result = await createUser({ email, name, role });
+      toast.success(result.message || "Benutzer wurde erfolgreich erstellt");
       setShowCreateForm(false);
     } catch (error: any) {
       toast.error("Fehler beim Erstellen: " + error.message);
@@ -74,6 +74,21 @@ export function UserManagement() {
       {showCreateForm && (
         <div className="bg-white rounded-lg shadow-md p-6 mb-6 border">
           <h2 className="text-xl font-semibold mb-4">Neuen Benutzer erstellen</h2>
+          <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4">
+            <div className="space-y-2 text-sm text-blue-800">
+              <p><strong>Wichtig - Anweisungen für den neuen Benutzer:</strong></p>
+              <ol className="list-decimal list-inside space-y-1 ml-4">
+                <li>Gehen Sie zur Anmeldeseite</li>
+                <li>Klicken Sie auf <strong>"Sign up instead"</strong> (nicht "Sign in")</li>
+                <li>Geben Sie Ihre E-Mail-Adresse ein</li>
+                <li>Erstellen Sie ein neues Passwort Ihrer Wahl</li>
+                <li>Klicken Sie auf <strong>"Sign up"</strong></li>
+              </ol>
+              <p className="mt-2 font-medium">
+                Der Benutzer kann sich sein eigenes Passwort erstellen - kein temporäres Passwort erforderlich.
+              </p>
+            </div>
+          </div>
           <form action={handleCreateUser} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -112,17 +127,6 @@ export function UserManagement() {
                   <option value="manager">Manager</option>
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Temporäres Passwort
-                </label>
-                <input
-                  name="temporaryPassword"
-                  type="password"
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
             </div>
             <div className="flex gap-2">
               <button
@@ -158,6 +162,9 @@ export function UserManagement() {
                 Rolle
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Aktionen
               </th>
             </tr>
@@ -183,6 +190,15 @@ export function UserManagement() {
                     <option value="admin">Admin</option>
                     <option value="manager">Manager</option>
                   </select>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                    user.emailVerificationTime 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-yellow-100 text-yellow-800'
+                  }`}>
+                    {user.emailVerificationTime ? 'Aktiviert' : 'Wartend'}
+                  </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button

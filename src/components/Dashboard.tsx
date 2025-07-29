@@ -35,50 +35,50 @@ export function Dashboard({ onViewObject, onEditObject }: DashboardProps) {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Meine Objekte</h1>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Meine Objekte</h1>
         <button
           onClick={() => onEditObject("")}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+          className="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded hover:bg-blue-700 transition-colors text-sm sm:text-base"
         >
           Neues Objekt erstellen
         </button>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <input
           type="text"
           placeholder="Nach Objektname suchen..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
         />
       </div>
 
       {objects.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="text-gray-500 text-lg mb-4">
+        <div className="text-center py-8 sm:py-12">
+          <div className="text-gray-500 text-base sm:text-lg mb-4">
             {search ? "Keine Objekte gefunden" : "Noch keine Objekte erstellt"}
           </div>
           {!search && (
             <button
               onClick={() => onEditObject("")}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              className="bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
             >
               Erstes Objekt erstellen
             </button>
           )}
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {objects.map((object) => (
-            <div key={object._id} className="bg-white rounded-lg shadow-md p-6 border">
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-semibold text-gray-900 truncate">
+            <div key={object._id} className="bg-white rounded-lg shadow-md p-4 sm:p-6 border">
+              <div className="flex justify-between items-start mb-3 sm:mb-4">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 truncate flex-1 mr-2">
                   {object.name}
                 </h3>
                 <span
-                  className={`px-2 py-1 text-xs rounded-full ${
+                  className={`px-2 py-1 text-xs rounded-full flex-shrink-0 ${
                     object.isReleased
                       ? "bg-green-100 text-green-800"
                       : "bg-yellow-100 text-yellow-800"
@@ -88,7 +88,7 @@ export function Dashboard({ onViewObject, onEditObject }: DashboardProps) {
                 </span>
               </div>
               
-              <div className="text-sm text-gray-600 mb-4">
+              <div className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">
                 <p>{object.street}</p>
                 <p>{object.postalCode} {object.city}</p>
                 <p className="mt-2">
@@ -101,10 +101,10 @@ export function Dashboard({ onViewObject, onEditObject }: DashboardProps) {
                 )}
               </div>
 
-              <div className="flex gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => onViewObject(object._id)}
-                  className="flex-1 bg-gray-100 text-gray-700 px-3 py-2 rounded hover:bg-gray-200 transition-colors text-sm"
+                  className="bg-gray-100 text-gray-700 px-2 sm:px-3 py-2 rounded hover:bg-gray-200 transition-colors text-xs sm:text-sm"
                 >
                   Anzeigen
                 </button>
@@ -112,13 +112,13 @@ export function Dashboard({ onViewObject, onEditObject }: DashboardProps) {
                   <>
                     <button
                       onClick={() => onEditObject(object._id)}
-                      className="flex-1 bg-blue-100 text-blue-700 px-3 py-2 rounded hover:bg-blue-200 transition-colors text-sm"
+                      className="bg-blue-100 text-blue-700 px-2 sm:px-3 py-2 rounded hover:bg-blue-200 transition-colors text-xs sm:text-sm"
                     >
                       Bearbeiten
                     </button>
                     <button
                       onClick={() => handleRelease(object._id)}
-                      className="flex-1 bg-green-100 text-green-700 px-3 py-2 rounded hover:bg-green-200 transition-colors text-sm"
+                      className="bg-green-100 text-green-700 px-2 sm:px-3 py-2 rounded hover:bg-green-200 transition-colors text-xs sm:text-sm"
                     >
                       Freigeben
                     </button>

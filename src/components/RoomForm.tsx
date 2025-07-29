@@ -47,9 +47,16 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
     setEditingRoom(null);
   };
 
+  // WICHTIG: Event-Handler für Button mit preventDefault
+  const handleAddRoomClick = (e: React.MouseEvent) => {
+    e.preventDefault(); // Verhindert das Abschicken des übergeordneten Formulars
+    e.stopPropagation(); // Verhindert Event-Bubbling
+    setShowAddRoom(true);
+  };
+
   const handleSubmitRoom = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    console.log(roomForm)
     try {
       if (editingRoom) {
         await updateRoom({
@@ -70,7 +77,10 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
     }
   };
 
-  const handleEditRoom = (room: any) => {
+  const handleEditRoom = (e: React.MouseEvent, room: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     setRoomForm({
       name: room.name,
       flooring: room.flooring,
@@ -85,7 +95,10 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
     setShowAddRoom(true);
   };
 
-  const handleDeleteRoom = async (roomId: string, roomName: string) => {
+  const handleDeleteRoom = async (e: React.MouseEvent, roomId: string, roomName: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (confirm(`Raum "${roomName}" wirklich löschen? Alle Bilder werden ebenfalls gelöscht.`)) {
       try {
         await deleteRoom({ roomId: roomId as Id<"rooms"> });
@@ -94,6 +107,12 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
         toast.error("Fehler beim Löschen: " + error.message);
       }
     }
+  };
+
+  const handleCancelClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    resetForm();
   };
 
   const handleImageUpload = async (roomId: string, files: FileList | null) => {
@@ -135,7 +154,10 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
     }
   };
 
-  const handleDeleteImage = async (imageId: string) => {
+  const handleDeleteImage = async (e: React.MouseEvent, imageId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (confirm("Bild wirklich löschen?")) {
       try {
         await deleteRoomImage({ imageId: imageId as Id<"roomImages"> });
@@ -155,13 +177,14 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold">Räume</h2>
+    <div className="bg-white rounded-lg shadow-md p-4 sm:p-6" onClick={(e) => e.stopPropagation()}>
+      <div className="flex justify-between items-center mb-4 sm:mb-6">
+        <h2 className="text-lg sm:text-xl font-semibold">Räume</h2>
         {!isReleased && (
           <button
-            onClick={() => setShowAddRoom(true)}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+            type="button" // WICHTIG: Explizit type="button" setzen
+            onClick={handleAddRoomClick} // Verwende den neuen Event-Handler
+            className="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded hover:bg-blue-700 transition-colors text-sm sm:text-base"
           >
             Raum hinzufügen
           </button>
@@ -170,14 +193,14 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
 
       {/* Add/Edit Room Form */}
       {showAddRoom && (
-        <div className="mb-6 p-4 border border-gray-200 rounded-lg bg-gray-50">
-          <h3 className="text-lg font-medium mb-4">
+        <div className="mb-4 sm:mb-6 p-3 sm:p-4 border border-gray-200 rounded-lg bg-gray-50" onClick={(e) => e.stopPropagation()}>
+          <h3 className="text-base sm:text-lg font-medium mb-3 sm:mb-4">
             {editingRoom ? "Raum bearbeiten" : "Neuen Raum hinzufügen"}
           </h3>
-          <form onSubmit={handleSubmitRoom} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form onSubmit={handleSubmitRoom} className="space-y-3 sm:space-y-4" onClick={(e) => e.stopPropagation()}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                   Raumname *
                 </label>
                 <input
@@ -185,12 +208,12 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
                   required
                   value={roomForm.name}
                   onChange={(e) => setRoomForm(prev => ({ ...prev, name: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   placeholder="z.B. Wohnzimmer, Küche, Badezimmer"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                   Bodenbelag *
                 </label>
                 <input
@@ -198,12 +221,12 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
                   required
                   value={roomForm.flooring}
                   onChange={(e) => setRoomForm(prev => ({ ...prev, flooring: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   placeholder="z.B. Parkett, Fliesen, Teppich"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                   Wandbeschaffenheit *
                 </label>
                 <input
@@ -211,19 +234,19 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
                   required
                   value={roomForm.walls}
                   onChange={(e) => setRoomForm(prev => ({ ...prev, walls: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                   placeholder="z.B. Tapete, Putz, Fliesen"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                   Zustand *
                 </label>
                 <select
                   required
                   value={roomForm.condition}
                   onChange={(e) => setRoomForm(prev => ({ ...prev, condition: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 >
                   <option value="">Zustand wählen</option>
                   <option value="Sehr gut">Sehr gut</option>
@@ -234,7 +257,7 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                   Steckdosen
                 </label>
                 <input
@@ -242,11 +265,11 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
                   min="0"
                   value={roomForm.outlets}
                   onChange={(e) => setRoomForm(prev => ({ ...prev, outlets: parseInt(e.target.value) || 0 }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                   Lichtschalter
                 </label>
                 <input
@@ -254,11 +277,11 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
                   min="0"
                   value={roomForm.lightSwitches}
                   onChange={(e) => setRoomForm(prev => ({ ...prev, lightSwitches: parseInt(e.target.value) || 0 }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                   Fenster
                 </label>
                 <input
@@ -266,11 +289,11 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
                   min="0"
                   value={roomForm.windows}
                   onChange={(e) => setRoomForm(prev => ({ ...prev, windows: parseInt(e.target.value) || 0 }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                   Heizkörper
                 </label>
                 <input
@@ -278,21 +301,21 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
                   min="0"
                   value={roomForm.radiators}
                   onChange={(e) => setRoomForm(prev => ({ ...prev, radiators: parseInt(e.target.value) || 0 }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
                 />
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-2">
               <button
-                type="submit"
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+                type="submit" // Nur dieser Button ist type="submit"
+                className="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded hover:bg-blue-700 transition-colors text-sm sm:text-base"
               >
                 {editingRoom ? "Aktualisieren" : "Hinzufügen"}
               </button>
               <button
-                type="button"
-                onClick={resetForm}
-                className="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition-colors"
+                type="button" // WICHTIG: type="button" für Abbrechen
+                onClick={handleCancelClick}
+                className="bg-gray-300 text-gray-700 px-3 sm:px-4 py-2 rounded hover:bg-gray-400 transition-colors text-sm sm:text-base"
               >
                 Abbrechen
               </button>
@@ -302,27 +325,29 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
       )}
 
       {/* Rooms List */}
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {object.rooms?.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            Noch keine Räume hinzugefügt
+          <div className="text-center py-6 sm:py-8 text-gray-500">
+            <p className="text-sm sm:text-base">Noch keine Räume hinzugefügt</p>
           </div>
         ) : (
           object.rooms?.map((room) => (
-            <div key={room._id} className="border border-gray-200 rounded-lg p-4">
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-lg font-semibold">{room.name}</h3>
+            <div key={room._id} className="border border-gray-200 rounded-lg p-3 sm:p-4">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 sm:gap-0 mb-3 sm:mb-4">
+                <h3 className="text-base sm:text-lg font-semibold">{room.name}</h3>
                 {!isReleased && (
                   <div className="flex gap-2">
                     <button
-                      onClick={() => handleEditRoom(room)}
-                      className="text-blue-600 hover:text-blue-800 text-sm"
+                      type="button" // WICHTIG: type="button"
+                      onClick={(e) => handleEditRoom(e, room)}
+                      className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm"
                     >
                       Bearbeiten
                     </button>
                     <button
-                      onClick={() => handleDeleteRoom(room._id, room.name)}
-                      className="text-red-600 hover:text-red-800 text-sm"
+                      type="button" // WICHTIG: type="button"
+                      onClick={(e) => handleDeleteRoom(e, room._id, room.name)}
+                      className="text-red-600 hover:text-red-800 text-xs sm:text-sm"
                     >
                       Löschen
                     </button>
@@ -330,7 +355,7 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-xs sm:text-sm mb-3 sm:mb-4">
                 <div>
                   <span className="font-medium">Bodenbelag:</span>
                   <div>{room.flooring}</div>
@@ -354,8 +379,8 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
 
               {/* Images */}
               <div>
-                <div className="flex justify-between items-center mb-3">
-                  <h4 className="font-medium">Bilder</h4>
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-2 sm:mb-3">
+                  <h4 className="font-medium text-sm sm:text-base">Bilder</h4>
                   {!isReleased && (
                     <div className="flex items-center gap-2">
                       <input
@@ -369,7 +394,7 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
                       />
                       <label
                         htmlFor={`upload-${room._id}`}
-                        className={`cursor-pointer bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 transition-colors ${
+                        className={`cursor-pointer bg-green-600 text-white px-2 sm:px-3 py-1 rounded text-xs sm:text-sm hover:bg-green-700 transition-colors ${
                           uploadingImages[room._id] ? "opacity-50 cursor-not-allowed" : ""
                         }`}
                       >
@@ -380,18 +405,19 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
                 </div>
 
                 {room.images && room.images.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
                     {room.images.map((image) => (
                       <div key={image._id} className="relative group">
                         <img
                           src={image.url || ""}
                           alt={image.filename}
-                          className="w-full h-32 object-cover rounded border"
+                          className="w-full h-20 sm:h-32 object-cover rounded border"
                         />
                         {!isReleased && (
                           <button
-                            onClick={() => handleDeleteImage(image._id)}
-                            className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                            type="button" // WICHTIG: type="button"
+                            onClick={(e) => handleDeleteImage(e, image._id)}
+                            className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             ✕
                           </button>
@@ -403,7 +429,7 @@ export function RoomForm({ objectId, isReleased }: RoomFormProps) {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-gray-500 text-sm">Keine Bilder vorhanden</div>
+                  <div className="text-gray-500 text-xs sm:text-sm">Keine Bilder vorhanden</div>
                 )}
               </div>
             </div>

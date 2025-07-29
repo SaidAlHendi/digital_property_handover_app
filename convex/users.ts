@@ -59,13 +59,12 @@ export const getAllUsers = query({
   },
 });
 
-// Admin only: Create user manually
+// Admin only: Create user placeholder (user must still sign up themselves)
 export const createUser = mutation({
   args: {
     email: v.string(),
     name: v.string(),
     role: v.union(v.literal("admin"), v.literal("user"), v.literal("manager")),
-    temporaryPassword: v.string(),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -92,21 +91,25 @@ export const createUser = mutation({
       throw new Error("User with this email already exists");
     }
     
-    // Create user
+    // Create user record without password (user will set password during sign up)
     const newUserId = await ctx.db.insert("users", {
       email: args.email,
       name: args.name,
-      emailVerificationTime: Date.now(),
+      // Don't set emailVerificationTime yet - will be set when user actually signs up
     });
     
-    // Create user profile
+    // Create user profile with the specified role
     await ctx.db.insert("userProfiles", {
       userId: newUserId,
       role: args.role,
       createdAt: Date.now(),
     });
     
-    return { success: true, userId: newUserId };
+    return { 
+      success: true, 
+      userId: newUserId,
+      message: `Benutzer "${args.name}" wurde erstellt. Der Benutzer muss sich jetzt mit "Sign up" registrieren, um sein Konto zu aktivieren.`
+    };
   },
 });
 
