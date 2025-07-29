@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 export function UserManagement() {
   const users = useQuery(api.users.getAllUsers);
+  const currentUser = useQuery(api.users.getCurrentUser);
   const createUser = useMutation(api.users.createUser);
   const updateUserRole = useMutation(api.users.updateUserRole);
   const deleteUser = useMutation(api.users.deleteUser);
@@ -51,7 +52,7 @@ export function UserManagement() {
     }
   };
 
-  if (users === undefined) {
+  if (users === undefined || currentUser === undefined) {
     return (
       <div className="flex justify-center items-center py-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -170,46 +171,56 @@ export function UserManagement() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {users.map((user) => (
-              <tr key={user._id}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">
-                    {user.name || "Kein Name"}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{user.email}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <select
-                    value={user.role}
-                    onChange={(e) => handleUpdateRole(user._id, e.target.value as any)}
-                    className="text-sm border border-gray-300 rounded px-2 py-1"
-                  >
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                    <option value="manager">Manager</option>
-                  </select>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                    user.emailVerificationTime 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {user.emailVerificationTime ? 'Aktiviert' : 'Wartend'}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button
-                    onClick={() => handleDeleteUser(user._id, user.name || user.email || "Unbekannt")}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    Löschen
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {users.map((user) => {
+              const isCurrentUser = currentUser && user._id === currentUser._id;
+              return (
+                <tr key={user._id} className={isCurrentUser ? "bg-blue-50" : ""}>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">
+                      {user.name || "Kein Name"}
+                      {isCurrentUser && (
+                        <span className="ml-2 text-xs text-blue-600 font-medium">(Sie)</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">{user.email}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <select
+                      value={user.role}
+                      onChange={(e) => handleUpdateRole(user._id, e.target.value as any)}
+                      className="text-sm border border-gray-300 rounded px-2 py-1"
+                    >
+                      <option value="user">User</option>
+                      <option value="admin">Admin</option>
+                      <option value="manager">Manager</option>
+                    </select>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                      user.emailVerificationTime 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {user.emailVerificationTime ? 'Aktiviert' : 'Wartend'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    {isCurrentUser ? (
+                      <span className="text-gray-400 text-xs">Nicht löschbar</span>
+                    ) : (
+                      <button
+                        onClick={() => handleDeleteUser(user._id, user.name || user.email || "Unbekannt")}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        Löschen
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

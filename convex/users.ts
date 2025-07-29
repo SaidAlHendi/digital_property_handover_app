@@ -59,6 +59,27 @@ export const getAllUsers = query({
   },
 });
 
+// Set email verification time when user signs up for the first time
+export const setEmailVerificationTime = mutation({
+  args: {
+    email: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("email"), args.email))
+      .first();
+    
+    if (user && !user.emailVerificationTime) {
+      await ctx.db.patch(user._id, {
+        emailVerificationTime: Date.now(),
+      });
+    }
+    
+    return null;
+  },
+});
+
 // Admin only: Create user placeholder (user must still sign up themselves)
 export const createUser = mutation({
   args: {

@@ -1,10 +1,13 @@
 "use client";
 import { useAuthActions } from "@convex-dev/auth/react";
+import { useMutation } from "convex/react";
+import { api } from "../convex/_generated/api";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export function SignInForm() {
   const { signIn } = useAuthActions();
+  const setEmailVerificationTime = useMutation(api.users.setEmailVerificationTime);
   const [flow, setFlow] = useState<"signIn" | "signUp">("signIn");
   const [submitting, setSubmitting] = useState(false);
 
@@ -21,12 +24,25 @@ export function SignInForm() {
       </div>
       <form
         className="flex flex-col gap-form-field"
-        onSubmit={(e) => {
+        onSubmit={async (e) => {
           e.preventDefault();
           setSubmitting(true);
           const formData = new FormData(e.target as HTMLFormElement);
+          const email = formData.get("email") as string;
           formData.set("flow", flow);
-          void signIn("password", formData).catch((error) => {
+          
+          try {
+            await signIn("password", formData);
+            
+            // If this was a sign up (new user), set the email verification time
+            if (flow === "signUp") {
+              try {
+                await setEmailVerificationTime({ email });
+              } catch (error) {
+                console.error("Failed to set email verification time:", error);
+              }
+            }
+          } catch (error: any) {
             let toastTitle = "";
             if (error.message.includes("Invalid password")) {
               toastTitle = "Falsches Passwort. Bitte versuchen Sie es erneut.";
@@ -41,7 +57,7 @@ export function SignInForm() {
             }
             toast.error(toastTitle);
             setSubmitting(false);
-          });
+          }
         }}
       >
         <input
