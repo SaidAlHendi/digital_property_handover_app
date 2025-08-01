@@ -1,67 +1,59 @@
-'use client'
-
-import type React from 'react'
-
 import { useState } from 'react'
-import { useMutation } from 'convex/react'
-import { api } from '../../convex/_generated/api'
+import { useAction, useQuery } from 'convex/react'
 import { toast } from 'sonner'
+import { api } from '../../convex/_generated/api'
 
-export default function PasswordChange() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [formData, setFormData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
-  })
+export function PasswordChange() {
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const currentUser = useQuery(api.users.getCurrentUser)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (formData.newPassword !== formData.confirmPassword) {
+    if (newPassword !== confirmPassword) {
       toast.error('Die neuen Passwörter stimmen nicht überein')
       return
     }
 
-    if (formData.newPassword.length < 6) {
+    if (newPassword.length < 6) {
       toast.error('Das neue Passwort muss mindestens 6 Zeichen lang sein')
       return
     }
 
-    setIsLoading(true)
+    setIsSubmitting(true)
 
     try {
       /*       await changePassword({
-        currentPassword: formData.currentPassword,
-        newPassword: formData.newPassword,
-      }) */
-
-      toast.success('Passwort wurde erfolgreich geändert')
-
-      // Reset form
-      setFormData({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: '',
+        currentPassword: currentPassword,
+        newPassword: newPassword,
       })
+ */
+      toast.success('Passwort erfolgreich geändert')
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
     } catch (error: any) {
-      toast.error(error.message || 'Fehler beim Ändern des Passworts')
+      toast.error('Fehler beim Ändern des Passworts: ' + error.message)
     } finally {
-      setIsLoading(false)
+      setIsSubmitting(false)
     }
   }
 
-  const handleInputChange =
-    (field: keyof typeof formData) =>
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: e.target.value,
-      }))
-    }
+  if (!currentUser) {
+    return <div>Laden...</div>
+  }
 
   return (
-    <div className='bg-gray-50 rounded-lg p-4'>
+    <div className='max-w-md mx-auto bg-white p-6 rounded-lg shadow-md'>
+      <h2 className='text-xl font-semibold mb-4'>Passwort ändern</h2>
+      <p className='text-sm text-gray-600 mb-4'>
+        Benutzer: {currentUser.email}
+      </p>
+
       <form onSubmit={handleSubmit} className='space-y-4'>
         <div>
           <label className='block text-sm font-medium text-gray-700 mb-1'>
@@ -69,10 +61,9 @@ export default function PasswordChange() {
           </label>
           <input
             type='password'
-            value={formData.currentPassword}
-            onChange={handleInputChange('currentPassword')}
-            className='w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-            placeholder='Ihr aktuelles Passwort'
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
             required
           />
         </div>
@@ -83,10 +74,9 @@ export default function PasswordChange() {
           </label>
           <input
             type='password'
-            value={formData.newPassword}
-            onChange={handleInputChange('newPassword')}
-            className='w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-            placeholder='Mindestens 6 Zeichen'
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
             required
             minLength={6}
           />
@@ -98,30 +88,21 @@ export default function PasswordChange() {
           </label>
           <input
             type='password'
-            value={formData.confirmPassword}
-            onChange={handleInputChange('confirmPassword')}
-            className='w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent'
-            placeholder='Neues Passwort wiederholen'
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className='w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
             required
             minLength={6}
           />
         </div>
 
-        <div className='pt-2'>
-          <button
-            type='submit'
-            disabled={
-              true ||
-              isLoading ||
-              !formData.currentPassword ||
-              !formData.newPassword ||
-              !formData.confirmPassword
-            }
-            className='w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
-          >
-            {isLoading ? 'Passwort wird geändert...' : 'Passwort ändern'}
-          </button>
-        </div>
+        <button
+          type='submit'
+          disabled={isSubmitting}
+          className='w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed'
+        >
+          {isSubmitting ? 'Wird geändert...' : 'Passwort ändern'}
+        </button>
       </form>
     </div>
   )

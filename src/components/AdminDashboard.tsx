@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import { toast } from "sonner";
 import { Id } from "../../convex/_generated/dataModel";
+import { toast } from "sonner";
 
 interface AdminDashboardProps {
   onViewObject: (objectId: string) => void;
@@ -11,34 +11,37 @@ interface AdminDashboardProps {
 
 export function AdminDashboard({ onViewObject, onEditObject }: AdminDashboardProps) {
   const [search, setSearch] = useState("");
-  const [selectedUser, setSelectedUser] = useState<Id<"users"> | "">("");
+  const [statusFilter, setStatusFilter] = useState<"draft" | "assigned" | "completed" | "released" | "">("");
+  const [assignedToFilter, setAssignedToFilter] = useState<Id<"users"> | "">("");
   
-  const users = useQuery(api.users.getAllUsers);
   const objects = useQuery(api.objects.getAllObjects, { 
     search: search || undefined,
-    createdBy: selectedUser || undefined,
+    status: statusFilter === "" ? undefined : statusFilter,
+    assignedTo: assignedToFilter === "" ? undefined : assignedToFilter,
   });
+  const users = useQuery(api.objects.getAllUsers);
+  const assignObject = useMutation(api.objects.assignObject);
   const releaseObject = useMutation(api.objects.releaseObject);
-  const deleteObject = useMutation(api.objects.deleteObject);
+
+  const handleAssign = async (objectId: string, userId: string) => {
+    try {
+      await assignObject({ 
+        objectId: objectId as Id<"objects">, 
+        assignedTo: userId as Id<"users"> 
+      });
+      toast.success("Objekt wurde zugewiesen");
+    } catch (error: any) {
+      toast.error("Fehler beim Zuweisen: " + error.message);
+    }
+  };
 
   const handleRelease = async (objectId: string) => {
-    if (confirm("Objekt freigeben?")) {
+    if (confirm("Objekt freigeben? Nach der Freigabe kann es nicht mehr bearbeitet werden.")) {
       try {
         await releaseObject({ objectId: objectId as Id<"objects"> });
         toast.success("Objekt wurde freigegeben");
       } catch (error: any) {
         toast.error("Fehler beim Freigeben: " + error.message);
-      }
-    }
-  };
-
-  const handleDelete = async (objectId: string) => {
-    if (confirm("Objekt wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.")) {
-      try {
-        await deleteObject({ objectId: objectId as Id<"objects"> });
-        toast.success("Objekt wurde gelöscht");
-      } catch (error: any) {
-        toast.error("Fehler beim Löschen: " + error.message);
       }
     }
   };
@@ -51,8 +54,38 @@ export function AdminDashboard({ onViewObject, onEditObject }: AdminDashboardPro
     );
   }
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "released":
+        return "bg-green-100 text-green-800";
+      case "completed":
+        return "bg-blue-100 text-blue-800";
+      case "assigned":
+        return "bg-yellow-100 text-yellow-800";
+      case "draft":
+        return "bg-gray-100 text-gray-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "released":
+        return "Freigegeben";
+      case "completed":
+        return "Abgeschlossen";
+      case "assigned":
+        return "Zugewiesen";
+      case "draft":
+        return "Entwurf";
+      default:
+        return "Unbekannt";
+    }
+  };
+
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Admin Dashboard</h1>
         <button
@@ -63,23 +96,35 @@ export function AdminDashboard({ onViewObject, onEditObject }: AdminDashboardPro
         </button>
       </div>
 
-      <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
+      {/* Filters */}
+      <div className="mb-4 sm:mb-6 space-y-3 sm:space-y-0 sm:space-x-4 sm:flex">
         <input
           type="text"
           placeholder="Nach Objektname suchen..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="flex-1 px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+          className="w-full sm:w-64 px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
         />
-        <select
-          value={selectedUser}
-          onChange={(e) => setSelectedUser(e.target.value as Id<"users"> | "")}
-          className="px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
-        >
+                  <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as "draft" | "assigned" | "completed" | "released" | "")}
+            className="w-full sm:w-40 px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+          >
+            <option value="">Alle Status</option>
+            <option value="draft">Entwurf</option>
+            <option value="assigned">Zugewiesen</option>
+            <option value="completed">Abgeschlossen</option>
+            <option value="released">Freigegeben</option>
+          </select>
+          <select
+            value={assignedToFilter}
+            onChange={(e) => setAssignedToFilter(e.target.value as Id<"users"> | "")}
+            className="w-full sm:w-48 px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"
+          >
           <option value="">Alle Benutzer</option>
           {users.map((user) => (
             <option key={user._id} value={user._id}>
-              {user.name || user.email} ({user.role})
+              {user.name}
             </option>
           ))}
         </select>
@@ -88,8 +133,16 @@ export function AdminDashboard({ onViewObject, onEditObject }: AdminDashboardPro
       {objects.length === 0 ? (
         <div className="text-center py-8 sm:py-12">
           <div className="text-gray-500 text-base sm:text-lg mb-4">
-            Keine Objekte gefunden
+            {search || statusFilter || assignedToFilter ? "Keine Objekte gefunden" : "Noch keine Objekte erstellt"}
           </div>
+          {!search && !statusFilter && !assignedToFilter && (
+            <button
+              onClick={() => onEditObject("")}
+              className="bg-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
+            >
+              Erstes Objekt erstellen
+            </button>
+          )}
         </div>
       ) : (
         <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -100,25 +153,36 @@ export function AdminDashboard({ onViewObject, onEditObject }: AdminDashboardPro
                   {object.name}
                 </h3>
                 <span
-                  className={`px-2 py-1 text-xs rounded-full flex-shrink-0 ${
-                    object.isReleased
-                      ? "bg-green-100 text-green-800"
-                      : "bg-yellow-100 text-yellow-800"
-                  }`}
+                  className={`px-2 py-1 text-xs rounded-full flex-shrink-0 ${getStatusColor(object.status)}`}
                 >
-                  {object.isReleased ? "Freigegeben" : "Entwurf"}
+                  {getStatusText(object.status)}
                 </span>
               </div>
               
               <div className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">
                 <p>{object.street}</p>
                 <p>{object.postalCode} {object.city}</p>
-                <p className="mt-2 font-medium">
-                  Ersteller: {object.creatorName}
+                <p className="mt-2">
+                  Erstellt von: {object.creatorName}
                 </p>
-                <p>
+                {object.assigneeName && (
+                  <p>
+                    Zugewiesen an: {object.assigneeName}
+                  </p>
+                )}
+                <p className="mt-2">
                   Erstellt: {new Date(object.createdAt).toLocaleDateString("de-DE")}
                 </p>
+                {object.assignedAt && (
+                  <p>
+                    Zugewiesen: {new Date(object.assignedAt).toLocaleDateString("de-DE")}
+                  </p>
+                )}
+                {object.completedAt && (
+                  <p>
+                    Abgeschlossen: {new Date(object.completedAt).toLocaleDateString("de-DE")}
+                  </p>
+                )}
                 {object.releasedAt && (
                   <p>
                     Freigegeben: {new Date(object.releasedAt).toLocaleDateString("de-DE")}
@@ -126,33 +190,54 @@ export function AdminDashboard({ onViewObject, onEditObject }: AdminDashboardPro
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={() => onViewObject(object._id)}
-                  className="bg-gray-100 text-gray-700 px-2 sm:px-3 py-2 rounded hover:bg-gray-200 transition-colors text-xs sm:text-sm"
-                >
-                  Anzeigen
-                </button>
-                <button
-                  onClick={() => onEditObject(object._id)}
-                  className="bg-blue-100 text-blue-700 px-2 sm:px-3 py-2 rounded hover:bg-blue-200 transition-colors text-xs sm:text-sm"
-                >
-                  Bearbeiten
-                </button>
-                {!object.isReleased && (
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => onViewObject(object._id)}
+                    className="bg-gray-100 text-gray-700 px-2 sm:px-3 py-2 rounded hover:bg-gray-200 transition-colors text-xs sm:text-sm"
+                  >
+                    Anzeigen
+                  </button>
+                  {object.status !== "released" && (
+                    <button
+                      onClick={() => onEditObject(object._id)}
+                      className="bg-blue-100 text-blue-700 px-2 sm:px-3 py-2 rounded hover:bg-blue-200 transition-colors text-xs sm:text-sm"
+                    >
+                      Bearbeiten
+                    </button>
+                  )}
+                </div>
+                
+                {/* Assignment dropdown for draft objects */}
+                {object.status === "draft" && (
+                  <div className="mt-2">
+                    <select
+                      onChange={(e) => {
+                        if (e.target.value) {
+                          handleAssign(object._id, e.target.value);
+                        }
+                      }}
+                      className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="">Benutzer zuweisen...</option>
+                      {users.map((user) => (
+                        <option key={user._id} value={user._id}>
+                          {user.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                
+                {/* Release button for completed objects */}
+                {object.status === "completed" && (
                   <button
                     onClick={() => handleRelease(object._id)}
-                    className="bg-green-100 text-green-700 px-2 sm:px-3 py-2 rounded hover:bg-green-200 transition-colors text-xs sm:text-sm"
+                    className="w-full mt-2 bg-green-100 text-green-700 px-2 sm:px-3 py-2 rounded hover:bg-green-200 transition-colors text-xs sm:text-sm"
                   >
                     Freigeben
                   </button>
                 )}
-                <button
-                  onClick={() => handleDelete(object._id)}
-                  className="bg-red-100 text-red-700 px-2 sm:px-3 py-2 rounded hover:bg-red-200 transition-colors text-xs sm:text-sm"
-                >
-                  Löschen
-                </button>
               </div>
             </div>
           ))}

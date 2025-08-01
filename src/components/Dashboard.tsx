@@ -33,6 +33,36 @@ export function Dashboard({ onViewObject, onEditObject }: DashboardProps) {
     );
   }
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "released":
+        return "bg-green-100 text-green-800";
+      case "completed":
+        return "bg-blue-100 text-blue-800";
+      case "assigned":
+        return "bg-yellow-100 text-yellow-800";
+      case "draft":
+        return "bg-gray-100 text-gray-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "released":
+        return "Freigegeben";
+      case "completed":
+        return "Abgeschlossen";
+      case "assigned":
+        return "Zugewiesen";
+      case "draft":
+        return "Entwurf";
+      default:
+        return "Unbekannt";
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
@@ -78,13 +108,9 @@ export function Dashboard({ onViewObject, onEditObject }: DashboardProps) {
                   {object.name}
                 </h3>
                 <span
-                  className={`px-2 py-1 text-xs rounded-full flex-shrink-0 ${
-                    object.isReleased
-                      ? "bg-green-100 text-green-800"
-                      : "bg-yellow-100 text-yellow-800"
-                  }`}
+                  className={`px-2 py-1 text-xs rounded-full flex-shrink-0 ${getStatusColor(object.status)}`}
                 >
-                  {object.isReleased ? "Freigegeben" : "Entwurf"}
+                  {getStatusText(object.status)}
                 </span>
               </div>
               
@@ -94,6 +120,16 @@ export function Dashboard({ onViewObject, onEditObject }: DashboardProps) {
                 <p className="mt-2">
                   Erstellt: {new Date(object.createdAt).toLocaleDateString("de-DE")}
                 </p>
+                {object.assignedAt && (
+                  <p>
+                    Zugewiesen: {new Date(object.assignedAt).toLocaleDateString("de-DE")}
+                  </p>
+                )}
+                {object.completedAt && (
+                  <p>
+                    Abgeschlossen: {new Date(object.completedAt).toLocaleDateString("de-DE")}
+                  </p>
+                )}
                 {object.releasedAt && (
                   <p>
                     Freigegeben: {new Date(object.releasedAt).toLocaleDateString("de-DE")}
@@ -108,7 +144,7 @@ export function Dashboard({ onViewObject, onEditObject }: DashboardProps) {
                 >
                   Anzeigen
                 </button>
-                {!object.isReleased && (
+                {object.status !== "released" && (
                   <>
                     <button
                       onClick={() => onEditObject(object._id)}
@@ -116,12 +152,14 @@ export function Dashboard({ onViewObject, onEditObject }: DashboardProps) {
                     >
                       Bearbeiten
                     </button>
-                    <button
-                      onClick={() => handleRelease(object._id)}
-                      className="bg-green-100 text-green-700 px-2 sm:px-3 py-2 rounded hover:bg-green-200 transition-colors text-xs sm:text-sm"
-                    >
-                      Freigeben
-                    </button>
+                    {object.status === "completed" && (
+                      <button
+                        onClick={() => handleRelease(object._id)}
+                        className="bg-green-100 text-green-700 px-2 sm:px-3 py-2 rounded hover:bg-green-200 transition-colors text-xs sm:text-sm"
+                      >
+                        Freigeben
+                      </button>
+                    )}
                   </>
                 )}
               </div>

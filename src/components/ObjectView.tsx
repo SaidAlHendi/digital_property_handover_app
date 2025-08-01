@@ -89,56 +89,39 @@ export function ObjectView({ objectId, onBack, onEdit }: ObjectViewProps) {
         </div>
 
         {/* Involved Parties */}
-        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Beteiligte Personen</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-            <div>
-              <h3 className="text-base sm:text-lg font-medium mb-2 sm:mb-3">Partei 1</h3>
-              <div className="space-y-1 sm:space-y-2 text-sm sm:text-base">
-                <div>
-                  <span className="font-medium">Name:</span> {object.party1Name}
+        {object.parties && object.parties.length > 0 && (
+          <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Beteiligte Personen</h2>
+            <div className="space-y-4 sm:space-y-6">
+              {object.parties.map((party, index) => (
+                <div key={index} className="border border-gray-200 rounded-lg p-3 sm:p-4">
+                  <h3 className="text-base sm:text-lg font-medium mb-2 sm:mb-3">Partei {index + 1}</h3>
+                  <div className="space-y-1 sm:space-y-2 text-sm sm:text-base">
+                    <div>
+                      <span className="font-medium">Name:</span> {party.name}
+                    </div>
+                    <div>
+                      <span className="font-medium">Funktion:</span> {party.function}
+                    </div>
+                    <div>
+                      <span className="font-medium">Adresse:</span>
+                      <div className="whitespace-pre-line">{party.address}</div>
+                    </div>
+                    <div>
+                      <span className="font-medium">Telefon:</span> {party.phone}
+                    </div>
+                    <div>
+                      <span className="font-medium">E-Mail:</span> {party.email}
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <span className="font-medium">Funktion:</span> {object.party1Function}
-                </div>
-                <div>
-                  <span className="font-medium">Adresse:</span>
-                  <div className="whitespace-pre-line">{object.party1Address}</div>
-                </div>
-                <div>
-                  <span className="font-medium">Telefon:</span> {object.party1Phone}
-                </div>
-                <div>
-                  <span className="font-medium">E-Mail:</span> {object.party1Email}
-                </div>
-              </div>
-            </div>
-            <div>
-              <h3 className="text-base sm:text-lg font-medium mb-2 sm:mb-3">Partei 2</h3>
-              <div className="space-y-1 sm:space-y-2 text-sm sm:text-base">
-                <div>
-                  <span className="font-medium">Name:</span> {object.party2Name}
-                </div>
-                <div>
-                  <span className="font-medium">Funktion:</span> {object.party2Function}
-                </div>
-                <div>
-                  <span className="font-medium">Adresse:</span>
-                  <div className="whitespace-pre-line">{object.party2Address}</div>
-                </div>
-                <div>
-                  <span className="font-medium">Telefon:</span> {object.party2Phone}
-                </div>
-                <div>
-                  <span className="font-medium">E-Mail:</span> {object.party2Email}
-                </div>
-              </div>
+              ))}
             </div>
           </div>
-        </div>
+        )}
 
         {/* Keys */}
-        {object.keys.length > 0 && (
+      {object.keys && object.keys.length > 0 && (
           <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
             <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Schlüsselübergabe</h2>
             <div className="space-y-2 mb-3 sm:mb-4">
@@ -159,11 +142,11 @@ export function ObjectView({ objectId, onBack, onEdit }: ObjectViewProps) {
         )}
 
         {/* Counters */}
-        {object.counters.length > 0 && (
+        {object.keys && object.keys.length > 0 && (
           <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
             <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Zählerdaten</h2>
             <div className="space-y-2 mb-3 sm:mb-4">
-              {object.counters.map((counter, index) => (
+              {object.counters && object.counters.map((counter, index) => (
                 <div key={index} className="flex justify-between text-sm sm:text-base">
                   <span>{counter.number}</span>
                   <span>{counter.currentReading}</span>

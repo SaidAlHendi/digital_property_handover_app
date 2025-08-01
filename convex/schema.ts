@@ -6,66 +6,108 @@ const applicationTables = {
   // Extended user profile with roles
   userProfiles: defineTable({
     userId: v.id('users'),
-    role: v.union(v.literal('admin'), v.literal('user'), v.literal('manager')),
-    createdAt: v.number(),
-  }).index('by_user', ['userId']),
+    createdAt: v.number(), // ✅ wieder hinzufügen
+    role: v.union(
+      v.literal('admin'),
+      v.literal('user'),
+      v.literal('manager') // ← muss vorhanden sein, sonst Error
+    ),
+    isTempPassword: v.boolean(),
+    createdBy: v.optional(v.id('users')), // Admin who created this user
+    lastLogin: v.optional(v.number()),
+    passwordHash: v.optional(v.string()),
+    salt: v.optional(v.string()),
+    email: v.optional(v.string()),
+  })
+    .index('by_user', ['userId'])
+    .index('by_email', ['email']),
+
+  resetRequests: defineTable({
+    email: v.string(),
+    requestedAt: v.number(),
+    status: v.union(v.literal('pending'), v.literal('resolved')),
+  })
+    .index('by_email', ['email'])
+    .index('by_status', ['status']),
 
   // Property objects
   objects: defineTable({
-    // Object details
+    // Object details (admin fills these)
     name: v.string(),
     addressSupplement: v.optional(v.string()),
     street: v.string(),
     postalCode: v.string(),
     city: v.string(),
+    room: v.optional(v.string()), // Room/Floor information
+    floor: v.optional(v.string()), // Floor information
 
-    // Involved parties (two parties)
-    party1Name: v.string(),
-    party1Function: v.string(),
-    party1Address: v.string(),
-    party1Phone: v.string(),
-    party1Email: v.string(),
-
-    party2Name: v.string(),
-    party2Function: v.string(),
-    party2Address: v.string(),
-    party2Phone: v.string(),
-    party2Email: v.string(),
-
-    // Key handover
-    keys: v.array(
-      v.object({
-        type: v.string(),
-        quantity: v.number(),
-      })
+    // Assignment and status
+    assignedTo: v.optional(v.id('users')), // Single user assignment (legacy)
+    assignedUsers: v.optional(v.array(v.id('users'))), // Multiple user assignments
+    status: v.union(
+      v.literal('draft'), // Admin created, not assigned
+      v.literal('assigned'), // Assigned to user, not completed
+      v.literal('completed'), // User completed the form
+      v.literal('released') // Released/finalized
     ),
 
-    // Counter data
-    counters: v.array(
-      v.object({
-        number: v.string(),
-        currentReading: v.number(),
-      })
+    // Involved parties - user fills these
+    parties: v.optional(
+      v.array(
+        v.object({
+          name: v.string(),
+          function: v.string(),
+          address: v.string(),
+          phone: v.string(),
+          email: v.string(),
+        })
+      )
     ),
 
-    // Miscellaneous and notes
+    // Key handover - user fills these
+    keys: v.optional(
+      v.array(
+        v.object({
+          type: v.string(),
+          customType: v.optional(v.string()),
+          quantity: v.number(),
+        })
+      )
+    ),
+
+    // Counter data - user fills these
+    counters: v.optional(
+      v.array(
+        v.object({
+          number: v.string(),
+          customNumber: v.optional(v.string()),
+          currentReading: v.number(),
+        })
+      )
+    ),
+
+    // Miscellaneous and notes - user fills these
     miscellaneous: v.optional(v.string()),
     notes: v.optional(v.string()),
 
-    // Signature
+    // Signature - user fills this
     signature: v.optional(v.string()),
 
     // Status and metadata
     isReleased: v.boolean(),
     createdBy: v.id('users'),
     createdAt: v.number(),
+    assignedAt: v.optional(v.number()),
+    completedAt: v.optional(v.number()),
     releasedAt: v.optional(v.number()),
   })
     .index('by_creator', ['createdBy'])
+    .index('by_assigned', ['assignedTo'])
+    .index('by_status', ['status'])
     .index('by_name', ['name'])
     .searchIndex('search_name', {
       searchField: 'name',
-      filterFields: ['createdBy', 'isReleased'],
+      filterFields: ['createdBy', 'assignedTo', 'status', 'isReleased'],
     }),
 
   // Rooms for each object
